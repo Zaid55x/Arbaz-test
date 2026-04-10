@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hot Reels</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Rajdhani:wght@600;700&display=swap');
+
+    :root {
+      --bg: #0d0d0d;
+      --card: #161616;
+      --accent: #a855f7;
+      --accent2: #ec4899;
+      --accent3: #f97316;
+      --text: #f5f5f5;
+      --muted: #777;
+      --border: #2a2a2a;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Poppins', sans-serif;
+      min-height: 100vh;
+      background-image: radial-gradient(ellipse at 20% 50%, rgba(168,85,247,0.06) 0%, transparent 60%),
+                        radial-gradient(ellipse at 80% 20%, rgba(236,72,153,0.06) 0%, transparent 50%);
+    }
+
+    /* ── TOPBAR ── */
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(13,13,13,0.95);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(168,85,247,0.2);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 13px 20px;
+    }
+
+    .logo {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2), var(--accent3));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .live-dot {
+      width: 8px; height: 8px;
+      background: #ef4444;
+      border-radius: 50%;
+      animation: blink 1.2s infinite;
+      box-shadow: 0 0 6px #ef4444;
+    }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.2; }
+    }
+
+    .live-text {
+      font-size: 11px;
+      font-weight: 700;
+      color: #ef4444;
+      letter-spacing: 2px;
+    }
+
+    /* ── FEED ── */
+    .feed {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 20px 12px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ── CARD ── */
+    .video-card {
+      background: var(--card);
+      border-radius: 20px;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+      border: 1px solid var(--border);
+      transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    }
+
+    .video-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 20px 60px rgba(168,85,247,0.2);
+      border-color: rgba(168,85,247,0.4);
+    }
+
+    .video-card:active { transform: scale(0.982); }
+
+    /* ── USER ROW ── */
+    .user-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 15px 10px;
+    }
+
+    .avatar-wrap {
+      position: relative;
+      flex-shrink: 0;
+    }
+
+    .avatar {
+      width: 42px; height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 16px;
+      color: white;
+      border: 2px solid transparent;
+      background-clip: padding-box;
+      box-shadow: 0 0 0 2px var(--accent), 0 0 12px rgba(168,85,247,0.4);
+    }
+
+    .online-dot {
+      position: absolute;
+      bottom: 1px; right: 1px;
+      width: 10px; height: 10px;
+      background: #22c55e;
+      border-radius: 50%;
+      border: 2px solid var(--card);
+    }
+
+    .user-info .username {
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .user-info .meta {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .follow-btn {
+      margin-left: auto;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border: none;
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 6px 16px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+      font-family: 'Poppins', sans-serif;
+      letter-spacing: 0.5px;
+    }
+
+    .follow-btn:hover { opacity: 0.85; transform: scale(1.05); }
+
+    /* ── THUMBNAIL ── */
+    .thumb-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: #111;
+      overflow: hidden;
+    }
+
+    .thumb-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+
+    .video-card:hover .thumb-wrap img { transform: scale(1.06); }
+
+    /* dark gradient overlay */
+    .thumb-wrap::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,0.75) 0%, rgba(0,0,0,0.1) 45%, transparent 70%);
+      pointer-events: none;
+    }
+
+    /* purple tint overlay on hover */
+    .thumb-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(168,85,247,0.15), rgba(236,72,153,0.1));
+      opacity: 0;
+      transition: opacity 0.3s;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .video-card:hover .thumb-overlay { opacity: 1; }
+
+    /* ── PLAY BUTTON ── */
+    .play-btn {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 70px; height: 70px;
+      background: rgba(168,85,247,0.9);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 10;
+      box-shadow: 0 0 0 8px rgba(168,85,247,0.2),
+                  0 0 0 18px rgba(168,85,247,0.08),
+                  0 8px 30px rgba(0,0,0,0.6);
+      transition: transform 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .video-card:hover .play-btn {
+      transform: translate(-50%, -50%) scale(1.12);
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 0 0 12px rgba(168,85,247,0.18),
+                  0 0 0 28px rgba(168,85,247,0.07),
+                  0 8px 40px rgba(168,85,247,0.4);
+    }
+
+    .play-btn svg {
+      width: 28px; height: 28px;
+      fill: white;
+      margin-left: 4px;
+    }
+
+    /* ── BADGES ── */
+    .hot-badge {
+      position: absolute;
+      top: 12px; left: 12px;
+      background: linear-gradient(90deg, #ef4444, #f97316);
+      color: white;
+      font-size: 10px; font-weight: 800;
+      letter-spacing: 1.5px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      z-index: 10;
+      text-transform: uppercase;
+      box-shadow: 0 2px 12px rgba(239,68,68,0.5);
+    }
+
+    .duration {
+      position: absolute;
+      bottom: 10px; right: 10px;
+      background: rgba(0,0,0,0.8);
+      color: white;
+      font-size: 11px; font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      z-index: 10;
+      backdrop-filter: blur(4px);
+    }
+
+    /* ── CARD BOTTOM ── */
+    .card-bottom { padding: 12px 15px 14px; }
+
+    .caption {
+      font-size: 13px;
+      color: #bbb;
+      line-height: 1.5;
+      margin-bottom: 12px;
+    }
+
+    .caption span { color: var(--accent); font-weight: 600; }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--muted);
+      font-size: 12px; font-weight: 600;
+      background: none; border: none;
+      cursor: pointer;
+      transition: color 0.2s;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .action-btn:hover { color: var(--accent); }
+    .action-btn svg { width: 17px; height: 17px; fill: currentColor; }
+
+    .views {
+      margin-left: auto;
+      font-size: 11px;
+      color: var(--muted);
+      background: rgba(255,255,255,0.05);
+      padding: 3px 10px;
+      border-radius: 20px;
+    }
+
+    /* ── RIPPLE ── */
+    .ripple {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(168,85,247,0.35);
+      animation: ripple-anim 0.65s ease-out;
+      pointer-events: none;
+      z-index: 20;
+    }
+
+    @keyframes ripple-anim {
+      from { transform: scale(0); opacity: 1; }
+      to { transform: scale(5); opacity: 0; }
+    }
+
+    /* ── CARD ENTER ANIMATION ── */
+    .video-card {
+      animation: fadeUp 0.4s ease both;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">HOTREELS</div>
+  <div class="topbar-right">
+    <div class="live-dot"></div>
+    <div class="live-text">LIVE</div>
+  </div>
+</div>
+
+<div class="feed" id="feed"></div>
+
+<script>
+  const SMARTLINK = "https://www.profitablecpmratenetwork.com/naje7g3nbd?key=73d3ea023e94b4b2f769c88c1a41fe1b";
+
+  const videos = [
+    { user:"priya_official", initial:"P", time:"2m ago", caption:"Viral ho gaya yeh reel 🔥 <span>#trending #viral</span>", img_url:"https://iili.io/qN1D4fI.jpg", duration:"0:47", likes:"12.4K", views:"98.2K views", hot:true },
+    { user:"neha_creates", initial:"N", time:"15m ago", caption:"Yeh dekho kya scene hai 😍 <span>#insta #reels</span>", img_url:"https://iili.io/qNEJo1R.jpg", duration:"1:12", likes:"8.9K", views:"54.1K views" },
+    { user:"raj_vibes", initial:"R", time:"1h ago", caption:"Full masti full timepass 😂 <span>#funny #desi</span>", img_url:"https://iili.io/qNEJ3e1.jpg", duration:"0:33", likes:"21K", views:"201K views" },
+    { user:"sneha_films", initial:"S", time:"3h ago", caption:"Aaj ka best reel 💯 <span>#explore #viral</span>", img_url:"https://iili.io/qNEJddB.jpg", duration:"2:05", likes:"5.2K", views:"33.7K views" },
+    { user:"ankita_live", initial:"A", time:"5h ago", caption:"Yeh toh dekh hi lo ek baar 🫦 <span>#hot #trending</span>", img_url:"https://iili.io/qNEJ25P.jpg", duration:"0:58", likes:"17.8K", views:"145K views" },
+    { user:"kavya_official", initial:"K", time:"7h ago", caption:"Kya scene tha yaar 😈 <span>#bold #viral</span>", img_url:"https://iili.io/qNEJFmF.jpg", duration:"1:03", likes:"31.2K", views:"289K views" },
+    { user:"diva_reels", initial:"D", time:"9h ago", caption:"Full on mast video 🥵 <span>#desi #reels</span>", img_url:"https://iili.io/qNEJBLJ.jpg", duration:"0:52", likes:"9.7K", views:"71.4K views" },
+    { user:"simran_vlogs", initial:"S", time:"11h ago", caption:"Dekho aur share karo zaroor 😏 <span>#trending #explore</span>", img_url:"https://iili.io/qNEJnqv.jpg", duration:"1:28", likes:"44.1K", views:"512K views", hot:true },
+    { user:"riya_world", initial:"R", time:"13h ago", caption:"Itna fire content 🔥🔥 <span>#insta #viral</span>", img_url:"https://iili.io/qNEJxgp.jpg", duration:"0:41", likes:"6.3K", views:"48.8K views" },
+    { user:"meera_creates", initial:"M", time:"16h ago", caption:"Subscribe kar lo dosto 💋 <span>#hot #content</span>", img_url:"https://iili.io/qNEN4Ns.md.webp", duration:"2:17", likes:"28.9K", views:"340K views" },
+    { user:"pooja_vibes", initial:"P", time:"19h ago", caption:"Yeh reel toh dekhna hi tha 😜 <span>#funny #trending</span>", img_url:"https://iili.io/qNENixf.md.jpg", duration:"0:38", likes:"15.6K", views:"167K views" },
+    { user:"alisha_star", initial:"A", time:"21h ago", caption:"Aag laga di iss video ne 🌶️ <span>#bold #viral</span>", img_url:"https://iili.io/qNEN6DG.md.jpg", duration:"1:44", likes:"52.3K", views:"621K views", hot:true },
+    { user:"tanu_official", initial:"T", time:"1d ago", caption:"Mast timepass ke liye watch karo 😂 <span>#desi #masti</span>", img_url:"https://iili.io/qNENrRn.md.jpg", duration:"0:55", likes:"7.1K", views:"62.3K views" },
+    { user:"nisha_films", initial:"N", time:"1d ago", caption:"Ek number content hai yaar 💯🔥 <span>#explore #reels</span>", img_url:"https://iili.io/qNEN6DG.md.jpg", duration:"1:19", likes:"19.8K", views:"223K views" },
+    { user:"zara_live", initial:"Z", time:"2d ago", caption:"Yeh toh viral hona hi tha 🚀 <span>#trending #hot</span>", img_url:"https://iili.io/qNENZf2.md.jpg", duration:"0:49", likes:"38.5K", views:"478K views" }
+  ];
+
+  function createCard(v, idx) {
+    const card = document.createElement('div');
+    card.className = 'video-card';
+    card.style.animationDelay = (idx * 0.07) + 's';
+    card.innerHTML = `
+      <div class="user-row">
+        <div class="avatar-wrap">
+          <div class="avatar">${v.initial}</div>
+          <div class="online-dot"></div>
+        </div>
+        <div class="user-info">
+          <div class="username">${v.user}</div>
+          <div class="meta">${v.time} &nbsp;·&nbsp; ${v.views}</div>
+        </div>
+        <button class="follow-btn">+ Follow</button>
+      </div>
+      <div class="thumb-wrap">
+        <img src="${v.img_url}" alt="thumbnail" loading="lazy" />
+        <div class="thumb-overlay"></div>
+        ${v.hot ? `<div class="hot-badge">🔥 Trending</div>` : ''}
+        <div class="play-btn">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <div class="duration">${v.duration}</div>
+      </div>
+      <div class="card-bottom">
+        <div class="caption">${v.caption}</div>
+        <div class="actions">
+          <button class="action-btn">
+            <svg viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            ${v.likes}
+          </button>
+          <button class="action-btn">
+            <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+            Comment
+          </button>
+          <button class="action-btn">
+            <svg viewBox="0 0 24 24"><path d="M18 16.08c-.76 0-1.44.3-1.96.77L8.91 12.7c.05-.23.09-.46.09-.7s-.04-.47-.09-.7l7.05-4.11c.54.5 1.25.81 2.04.81 1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3c0 .24.04.47.09.7L8.04 9.81C7.5 9.31 6.79 9 6 9c-1.66 0-3 1.34-3 3s1.34 3 3 3c.79 0 1.5-.31 2.04-.81l7.12 4.16c-.05.21-.08.43-.08.65 0 1.61 1.31 2.92 2.92 2.92s2.92-1.31 2.92-2.92-1.31-2.92-2.92-2.92z"/></svg>
+            Share
+          </button>
+          <span class="views">${v.views}</span>
+        </div>
+      </div>
+    `;
+
+    card.addEventListener('click', function(e) {
+      if (e.target.closest('.follow-btn') || e.target.closest('.action-btn')) return;
+      const rect = card.querySelector('.thumb-wrap').getBoundingClientRect();
+      const ripple = document.createElement('div');
+      ripple.className = 'ripple';
+      ripple.style.width = ripple.style.height = '60px';
+      ripple.style.left = (e.clientX - rect.left - 30) + 'px';
+      ripple.style.top = (e.clientY - rect.top - 30) + 'px';
+      card.querySelector('.thumb-wrap').appendChild(ripple);
+      setTimeout(() => ripple.remove(), 700);
+      setTimeout(() => window.open(SMARTLINK, '_blank'), 150);
+    });
+
+    return card;
+  }
+
+  const feed = document.getElementById('feed');
+  videos.forEach((v, i) => feed.appendChild(createCard(v, i)));
+</script>
+</body>
+</html>
